@@ -1,0 +1,220 @@
+<h1>M2 (002) Wafer</h1>
+<p> --> Hover over the detector positions to get the names of the detector objects included in each of them.<br> --> Double click on a detector position to copy the detector names.</p>
+
+<h2>Please note:</h2>
+Each of the detector frequencies is considered a different detector object in the IMo, so does each polarisation angle. This means that each of the detector positions in the figure below actually correspond to 4 detector objects (2 colors and 2 orientations). 
+
+<script type="text/javascript" src="https://d3js.org/d3.v5.js"></script>
+<script type="text/javascript" src="https://mpld3.github.io/js/mpld3.v0.5.12.js"></script>
+
+
+<style>
+
+</style>
+
+<div id="fig_el3415a70ba1a5-c1e0-40f5-946c-110619f257763668723765"></div>
+<script type="text/javascript">
+
+  !function(mpld3){
+       
+    mpld3.register_plugin("hoverinfo", ClickInfoPlugin);
+    ClickInfoPlugin.prototype = Object.create(mpld3.Plugin.prototype);
+    ClickInfoPlugin.prototype.constructor = ClickInfoPlugin;
+    ClickInfoPlugin.prototype.requiredProps = ["id","coords", "sign_array"];
+    function ClickInfoPlugin(fig, props){
+        mpld3.Plugin.call(this, fig, props);
+    };
+    ClickInfoPlugin.prototype.draw = function(){
+        var fig = this.fig;
+        var el = mpld3.get_element(this.props.id);
+        var coords = this.props.coords;
+        var sign_array = this.props.sign_array;
+        var ax = fig.axes[0];
+        var container = (fig.canvas && fig.canvas.parentNode) ? fig.canvas.parentNode : document.body;
+
+        // floating info div
+        var info = document.createElement('div');
+        info.style.position = 'absolute';
+        info.style.background = 'black';
+        info.style.color = 'white';
+        info.style.border = '1px solid #333';
+        info.style.padding = '6px';
+        info.style.display = 'none';
+        info.style.pointerEvents = 'none';
+        info.style.zIndex = 9999;
+        container.appendChild(info);
+
+        var sel = null;
+
+        // copy helper (Clipboard API with textarea fallback)
+        function copyToClipboard(text){
+            if(navigator.clipboard && navigator.clipboard.writeText){
+                navigator.clipboard.writeText(text).catch(function(err){
+                    // fallback on error
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.focus();
+                    ta.select();
+                    try { document.execCommand('copy'); } catch(e) {}
+                    document.body.removeChild(ta);
+                });
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                try { document.execCommand('copy'); } catch(e){}
+                document.body.removeChild(ta);
+            }
+        }
+
+
+        // on hover show; on mouseout hide
+        el.elements().on("mouseover", function(d, i){
+            var px = coords[i][0], py = coords[i][1];
+            var pol = sign_array[i];
+            var name1 = '002_' + String(i).padStart(3,'0') + '_XX_118_' + (pol === '+' ? '000' : '045');
+            var name2 = '002_' + String(i).padStart(3,'0') + '_XX_118_' + (pol === '+' ? '090' : '135');
+            var name3 = '002_' + String(i).padStart(3,'0') + '_XX_182_' + (pol === '+' ? '000' : '045');
+            var name4 = '002_' + String(i).padStart(3,'0') + '_XX_182_' + (pol === '+' ? '090' : '135');
+            var ev = d3.event;
+            if(ev && ev.pageX !== undefined){
+                info.style.left = (ev.pageX + 10) + 'px';
+                info.style.top  = (ev.pageY + 10) + 'px';
+            } else {
+                var rect = container.getBoundingClientRect();
+                info.style.left = (rect.left + 10) + 'px';
+                info.style.top  = (rect.top + 10) + 'px';
+            }
+            
+            info.innerHTML =
+                '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
+                '<div>118GHz, Pol 0: ' + name1 + '</div>' +
+                '<div>118GHz, Pol 90: ' + name2 +  '</div>' +
+                '<div>182GHz, Pol 0: ' + name3 +  '</div>' +
+                '<div>182GHz, Pol 90: ' + name4 +  '</div>';
+            info.style.display = 'block';
+
+            if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
+
+            var svg = container.querySelector('svg');
+            if(!svg){ return; }
+            var sx = ax.x.scale(px), sy = ax.y.scale(py);
+            sel = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            sel.setAttribute('cx', sx);
+            sel.setAttribute('cy', sy);
+            sel.setAttribute('r', 8);
+            sel.setAttribute('fill', 'black');
+            sel.setAttribute('stroke', 'white');
+            sel.setAttribute('stroke-width', 2);
+            sel.setAttribute('class', 'mpld3-selected-point');
+            svg.appendChild(sel);
+        });
+
+        el.elements().on("mouseout", function(d, i){
+            info.style.display = 'none';
+            if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
+        });
+        // store original fill/stroke so we can restore
+
+        el.elements().on("mouseover", function(d, i){
+            var px = coords[i][0], py = coords[i][1];
+            var pol = sign_array[i];
+            var name1 = '002_' + String(i).padStart(3,'0') + '_XX_118_' + (pol === '+' ? '000' : '045');
+            var name2 = '002_' + String(i).padStart(3,'0') + '_XX_118_' + (pol === '+' ? '090' : '135');
+            var name3 = '002_' + String(i).padStart(3,'0') + '_XX_182_' + (pol === '+' ? '000' : '045');
+            var name4 = '002_' + String(i).padStart(3,'0') + '_XX_182_' + (pol === '+' ? '090' : '135');
+            var ev = d3.event;
+            if(ev && ev.pageX !== undefined){
+                info.style.left = (ev.pageX + 10) + 'px';
+                info.style.top  = (ev.pageY + 10) + 'px';
+            } else {
+                var rect = container.getBoundingClientRect();
+                info.style.left = (rect.left + 10) + 'px';
+                info.style.top  = (rect.top + 10) + 'px';
+            }
+            info.innerHTML =
+                '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
+                '<div>118GHz, Pol 0 -> Name: ' + name1 + '</div>' +
+                '<div>118GHz, Pol 90  -> Name: ' + name2 +  '</div>' +
+                '<div>182GHz, Pol 0 -> Name: ' + name3 +  '</div>' +
+                '<div>182GHz, Pol 90 -> Name: ' + name4 +  '</div>';
+            info.style.display = 'block';
+
+            // highlight underlying point (mpld3 point elements are usually <path> in the collection)
+            // `this` is the selection element; use d3.select(this) to access the specific point element
+            var point = d3.select(this);
+            // save original styles on DOM element so we can restore later
+            if (!this.__orig_fill) this.__orig_fill = point.attr("fill") || point.style("fill") || "";
+            if (!this.__orig_stroke) this.__orig_stroke = point.attr("stroke") || point.style("stroke") || "";
+            // set highlight color (change as desired)
+            point.attr("fill", "orange").attr("stroke", "red").style("fill", "orange").style("stroke", "red");
+
+            if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
+            var svg = container.querySelector('svg');
+            if(!svg){ return; }
+            var sx = ax.x.scale(px), sy = ax.y.scale(py);
+            sel = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            sel.setAttribute('cx', sx);
+            sel.setAttribute('cy', sy);
+            sel.setAttribute('r', 8);
+            sel.setAttribute('fill', 'black');
+            sel.setAttribute('stroke', 'white');
+            sel.setAttribute('stroke-width', 2);
+            sel.setAttribute('class', 'mpld3-selected-point');
+            svg.appendChild(sel);
+        });
+
+        el.elements().on("mouseout", function(d, i){
+            info.style.display = 'none';
+            // restore original styles
+            var point = d3.select(this);
+            if (this.__orig_fill !== undefined) { point.attr("fill", this.__orig_fill).style("fill", this.__orig_fill); }
+            if (this.__orig_stroke !== undefined) { point.attr("stroke", this.__orig_stroke).style("stroke", this.__orig_stroke); }
+
+            if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
+        });
+
+        // double-click to copy the info HTML
+        el.elements().on("dblclick", function(d, i){
+            var px = coords[i][0], py = coords[i][1];
+            var pol = sign_array[i];
+            var name1 = '002_' + String(i).padStart(3,'0') + '_XX_118_' + (pol === '+' ? '000' : '045');
+            var name2 = '002_' + String(i).padStart(3,'0') + '_XX_118_' + (pol === '+' ? '090' : '135');
+            var name3 = '002_' + String(i).padStart(3,'0') + '_XX_182_' + (pol === '+' ? '000' : '045');
+            var name4 = '002_' + String(i).padStart(3,'0') + '_XX_182_' + (pol === '+' ? '090' : '135');
+
+            var htmlText =
+                '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
+                '<div>118GHz, Pol 0: ' + name1 + '</div>' +
+                '<div>118GHz, Pol 90: ' + name2 +  '</div>' +
+                '<div>182GHz, Pol 0: ' + name3 +  '</div>' +
+                '<div>182GHz, Pol 90: ' + name4 +  '</div>';
+
+
+            var plain = htmlText.replace(/<br\s*\/?>/gi, '\n')
+                            .replace(/<\/div>/gi, '\n')
+                            .replace(/<[^>]+>/g, '')
+                            .replace(/\n\s*\n/g, '\n')
+                            .trim();
+
+            copyToClipboard(plain);
+
+            // optional: brief visual feedback in the info div
+            info.innerHTML = '<div style="font-weight:bold;margin-bottom:4px;">Copied to clipboard!</div>';
+            setTimeout(function(){ info.style.display = 'none'; }, 1000);
+});
+
+    }
+    
+       mpld3.draw_figure("fig_el3415a70ba1a5-c1e0-40f5-946c-110619f257763668723765", {"width": 1000.0, "height": 1000.0, "axes": [{"bbox": [0.15499999999999997, 0.45, 0.45, 0.45], "xlim": [0.0, 95.0], "ylim": [0.0, 95.0], "xdomain": [0.0, 95.0], "ydomain": [0.0, 95.0], "xscale": "linear", "yscale": "linear", "axes": [{"position": "bottom", "nticks": 6, "tickvalues": null, "tickformat_formatter": "", "tickformat": null, "scale": "linear", "fontsize": 10.0, "grid": {"gridOn": false}, "visible": true}, {"position": "left", "nticks": 6, "tickvalues": null, "tickformat_formatter": "", "tickformat": null, "scale": "linear", "fontsize": 10.0, "grid": {"gridOn": false}, "visible": true}], "axesbg": "#FFFFFF", "axesbgalpha": null, "zoomable": true, "id": "el341565226cbe-dd66-4f5c-88f0-a402e6e746a8", "lines": [], "paths": [{"data": "data02", "xindex": 0, "yindex": 1, "coordinates": "axes", "pathcodes": ["M", "L", "S", "L", "S", "L", "S", "L", "S", "Z"], "id": "el34155df8636e-335f-4cb6-ac81-b13d2ef87648", "dasharray": "none", "alpha": 0.8, "facecolor": "none", "edgecolor": "none", "edgewidth": 1.0, "zorder": 1000000.0}], "markers": [], "texts": [{"text": "+", "position": [6.0, 89.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415690d2a04-a6fa-42ea-8799-d079a30be815"}, {"text": "x", "position": [17.857142857142858, 89.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415ca1a18a2-9ae3-45f9-b946-6a3be0df8dc8"}, {"text": "+", "position": [29.71428571428571, 89.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415eb6ffa1a-7107-48d3-bb62-262c9a3263f1"}, {"text": "x", "position": [41.57142857142857, 89.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415eb084e7d-0ddf-4f03-b361-608bc2e65980"}, {"text": "+", "position": [53.42857142857142, 89.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341501076aa2-96df-40ef-904c-11382226c72c"}, {"text": "x", "position": [65.28571428571428, 89.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34150f610679-5b3b-4707-9705-64d5749dac4b"}, {"text": "+", "position": [77.14285714285714, 89.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341531982e4d-4e54-45ba-8ee8-1a5ff1da6baa"}, {"text": "x", "position": [89.0, 89.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34154a3ab184-03d0-429b-a1ca-09bd2410207e"}, {"text": "x", "position": [6.0, 77.14285714285715], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415f5cd5da5-6277-4a87-abaf-40ada1ed7737"}, {"text": "+", "position": [17.857142857142858, 77.14285714285715], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415bf7738b2-86e0-4c65-b991-2550c969607f"}, {"text": "x", "position": [29.71428571428571, 77.14285714285715], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415bb4f2281-7ee2-4191-ac49-ddb86f6d800b"}, {"text": "+", "position": [41.57142857142857, 77.14285714285715], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34153f130472-42b2-468d-9aec-bdca49b46365"}, {"text": "x", "position": [53.42857142857143, 77.14285714285715], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415e45436a6-4211-4619-9e2b-009dd82c3759"}, {"text": "+", "position": [65.28571428571428, 77.14285714285715], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415fd621219-ee6f-4001-a624-34d5b36d26ff"}, {"text": "x", "position": [77.14285714285714, 77.14285714285715], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341547c037a7-3631-4e90-838f-c3451a0f7347"}, {"text": "+", "position": [89.0, 77.14285714285715], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415e8b6befe-4dd9-4a0a-b95d-cc23b5a5bccf"}, {"text": "+", "position": [6.0, 65.28571428571428], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415126f98c3-067b-41a8-b62d-b290c618b104"}, {"text": "x", "position": [17.857142857142854, 65.28571428571429], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415acc4488d-054c-421f-a96c-59c191d30b9d"}, {"text": "+", "position": [29.71428571428571, 65.28571428571429], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415e5b1cd8b-42cc-4682-bd20-b6b6384be93d"}, {"text": "x", "position": [41.57142857142857, 65.28571428571429], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415d9d583a6-ae4c-4041-a52c-214e55937d3b"}, {"text": "+", "position": [53.42857142857143, 65.28571428571429], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34152d6886f6-7cb8-43fa-9971-092465199dc8"}, {"text": "x", "position": [65.28571428571428, 65.28571428571429], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341588a03cde-52d8-4e27-900c-85d2ef0bcef4"}, {"text": "+", "position": [77.14285714285714, 65.28571428571428], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341521a81e01-e01c-459f-8f34-ac21058a408b"}, {"text": "x", "position": [89.0, 65.28571428571428], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415bc7f1a2e-8be2-418f-993f-da6496d1acb0"}, {"text": "x", "position": [6.0, 53.42857142857142], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415b14f3e8d-b38c-40af-9c92-84a89a22353e"}, {"text": "+", "position": [17.857142857142854, 53.42857142857143], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415bc7e44fe-1612-48b1-9dbe-088a24d31c9f"}, {"text": "x", "position": [29.71428571428571, 53.42857142857142], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415dc2ca13f-87d7-44ac-b107-7b188544619d"}, {"text": "+", "position": [41.57142857142857, 53.42857142857142], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34150a64929c-b383-491b-bf8a-9e39e38efed8"}, {"text": "x", "position": [53.42857142857142, 53.42857142857142], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415ec79db7f-7501-4e7f-a68c-f0e6aecef2a5"}, {"text": "+", "position": [65.28571428571428, 53.42857142857143], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415f8dccf16-b31a-4804-848a-fd39940767e7"}, {"text": "x", "position": [77.14285714285714, 53.42857142857142], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415ef3e4b99-b624-415f-96e7-6e68e6d8282f"}, {"text": "+", "position": [89.0, 53.42857142857142], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341523d98671-f5aa-42b5-a89a-03dd9ca6de43"}, {"text": "+", "position": [6.0, 41.57142857142858], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34155927714d-6812-4b9d-9294-978f11a892f4"}, {"text": "x", "position": [17.857142857142858, 41.57142857142858], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34150d93e68c-4064-4c26-a161-d3501b12f924"}, {"text": "+", "position": [29.71428571428571, 41.57142857142857], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341595d95f8d-adc8-4ecd-8a09-4e113f65b0ae"}, {"text": "x", "position": [41.57142857142857, 41.57142857142858], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415339c6dac-29f9-43f9-98c2-d083dc920362"}, {"text": "+", "position": [53.42857142857142, 41.57142857142858], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341586d23073-c22b-4b71-b381-c52b853fc4af"}, {"text": "x", "position": [65.28571428571428, 41.57142857142857], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415885f5774-50b4-453b-874c-26c5f15e451a"}, {"text": "+", "position": [77.14285714285714, 41.57142857142858], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34155d461694-cb9f-46de-9458-8a2c691da8f8"}, {"text": "x", "position": [89.0, 41.57142857142858], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415ded40042-1318-47e9-8639-ac47f12a5288"}, {"text": "x", "position": [6.0, 29.714285714285722], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415706d4fec-c5e7-4d69-b937-486c4f446e12"}, {"text": "+", "position": [17.857142857142858, 29.714285714285726], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34152a0c4bdc-441e-4959-b060-6d053dbc5498"}, {"text": "x", "position": [29.71428571428571, 29.714285714285722], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415a9be8e2e-14ce-4fe3-9c39-63d01f8d9ff1"}, {"text": "+", "position": [41.57142857142857, 29.71428571428572], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341546a1f88d-b7ee-4ddd-aeeb-0f06fd1ff852"}, {"text": "x", "position": [53.42857142857142, 29.714285714285722], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415a97be9e8-b8a2-4ec9-a9c0-b09675666397"}, {"text": "+", "position": [65.28571428571428, 29.714285714285722], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34159924edf2-14c2-43f6-b491-72ce64059bb4"}, {"text": "x", "position": [77.14285714285714, 29.714285714285722], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341501acd9a6-8b0f-4725-844a-b1541c672035"}, {"text": "+", "position": [89.0, 29.714285714285722], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415f57b8f00-3201-454f-bad3-6cb5c9e9a67a"}, {"text": "+", "position": [6.0, 17.85714285714286], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34152680c289-c421-4383-b482-ff76bf305a71"}, {"text": "x", "position": [17.857142857142854, 17.857142857142865], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34156a588d36-cdee-4181-ab61-185a7788b8c8"}, {"text": "+", "position": [29.71428571428571, 17.85714285714286], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34157dd1e225-ec63-4e89-9b11-67eaa7a0013c"}, {"text": "x", "position": [41.57142857142857, 17.857142857142858], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341517d85768-61bb-45b5-9495-578cc43b8f5d"}, {"text": "+", "position": [53.42857142857142, 17.85714285714286], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34157ee47afe-34c8-4379-a12b-fcdcdeea777a"}, {"text": "x", "position": [65.28571428571428, 17.85714285714286], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415333b80e5-7901-4828-9d81-cc9261c816a3"}, {"text": "+", "position": [77.14285714285714, 17.85714285714286], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415a0a1ab9a-d9f2-4dec-85a6-4d8c7e01d92a"}, {"text": "x", "position": [89.0, 17.85714285714286], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341515c73035-2912-4ff1-80f5-810512720386"}, {"text": "x", "position": [6.0, 6.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415c789a77d-a968-4d4b-ae81-8f564b367f42"}, {"text": "+", "position": [17.857142857142858, 6.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415b3e82ac2-fffc-4aab-8fd1-20d862d2d560"}, {"text": "x", "position": [29.71428571428571, 6.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415ab92cd8f-6e65-481a-a7e0-9c7f358e5978"}, {"text": "+", "position": [41.57142857142857, 6.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341546160162-8678-4f60-b824-e6437be8529b"}, {"text": "x", "position": [53.42857142857142, 6.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34155cd08fad-3e49-4fd9-b7d7-8a12114294ee"}, {"text": "+", "position": [65.28571428571428, 6.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34159dc89718-8da2-47ac-84e9-581a5bb9c4bf"}, {"text": "x", "position": [77.14285714285714, 6.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el34153563feba-7124-4990-9fa7-caee29ac57d3"}, {"text": "+", "position": [89.0, 6.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341532524d2b-fb81-4a78-9ff3-4016c519a41c"}, {"text": "mm", "position": [0.5, -0.13012345679012338], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "hanging", "rotation": -0.0, "fontsize": 10.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341566bae6a7-65e2-4d78-ae10-421146ec039d"}, {"text": "mm", "position": [-0.1465123456790124, 0.5], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "auto", "rotation": -90.0, "fontsize": 10.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el341510f7fabe-7ccb-402b-97ed-35ff35c5aa77"}, {"text": "M2 002", "position": [0.5, 1.037037037037037], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "auto", "rotation": -0.0, "fontsize": 12.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3415debc7e32-64b4-4daa-bc8e-421bf7c09105"}, {"text": "+", "position": [1.0935185185185186, 0.5568055555555556], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 30.0, "color": "#000000", "alpha": 1, "zorder": 1000003.0, "id": "el3415b8fea451-9c2f-4af4-b8ea-8a397b0d5f96"}, {"text": "Polarisation aligned w/ FP", "position": [1.1407407407407408, 0.5431481481481482], "coordinates": "axes", "h_anchor": "start", "v_baseline": "auto", "rotation": -0.0, "fontsize": 15.0, "color": "#000000", "alpha": 1, "zorder": 1000003.0, "id": "el34159e23f76f-2bca-455d-ad08-dd692a1b6a78"}, {"text": "x", "position": [1.0935185185185186, 0.4171759259259258], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 30.0, "color": "#000000", "alpha": 1, "zorder": 1000003.0, "id": "el3415a83056cb-f5e5-4da9-ac6f-3b31a2ccd308"}, {"text": "45\u00ba offset polarisation", "position": [1.1407407407407408, 0.4035185185185184], "coordinates": "axes", "h_anchor": "start", "v_baseline": "auto", "rotation": -0.0, "fontsize": 15.0, "color": "#000000", "alpha": 1, "zorder": 1000003.0, "id": "el341504998d55-3a8f-438c-a916-b99e6f6f0919"}], "collections": [{"offsets": "data01", "xindex": 0, "yindex": 1, "paths": [[[[0.0, -0.5], [0.13260155, -0.5], [0.25978993539242673, -0.44731684579412084], [0.3535533905932738, -0.3535533905932738], [0.44731684579412084, -0.25978993539242673], [0.5, -0.13260155], [0.5, 0.0], [0.5, 0.13260155], [0.44731684579412084, 0.25978993539242673], [0.3535533905932738, 0.3535533905932738], [0.25978993539242673, 0.44731684579412084], [0.13260155, 0.5], [0.0, 0.5], [-0.13260155, 0.5], [-0.25978993539242673, 0.44731684579412084], [-0.3535533905932738, 0.3535533905932738], [-0.44731684579412084, 0.25978993539242673], [-0.5, 0.13260155], [-0.5, 0.0], [-0.5, -0.13260155], [-0.44731684579412084, -0.25978993539242673], [-0.3535533905932738, -0.3535533905932738], [-0.25978993539242673, -0.44731684579412084], [-0.13260155, -0.5], [0.0, -0.5]], ["M", "C", "C", "C", "C", "C", "C", "C", "C", "Z"]]], "pathtransforms": [[55.55555555555556, 0.0, 0.0, 55.55555555555556, 0.0, 0.0]], "alphas": [0.7], "edgecolors": ["rgba(31, 119, 180, 0.7)"], "facecolors": ["rgba(31, 119, 180, 0.7)"], "edgewidths": [1.0], "offsetcoordinates": "data", "pathcoordinates": "display", "zorder": 1, "id": "el34156593f4c6-54e5-4c85-a837-80022f463a88"}], "images": [], "sharex": [], "sharey": []}], "data": {"data01": [[6.0, 89.0], [17.857142857142858, 89.0], [29.71428571428571, 89.0], [41.57142857142857, 89.0], [53.42857142857142, 89.0], [65.28571428571428, 89.0], [77.14285714285714, 89.0], [89.0, 89.0], [6.0, 77.14285714285715], [17.857142857142858, 77.14285714285715], [29.71428571428571, 77.14285714285715], [41.57142857142857, 77.14285714285715], [53.42857142857143, 77.14285714285715], [65.28571428571428, 77.14285714285715], [77.14285714285714, 77.14285714285715], [89.0, 77.14285714285715], [6.0, 65.28571428571428], [17.857142857142854, 65.28571428571429], [29.71428571428571, 65.28571428571429], [41.57142857142857, 65.28571428571429], [53.42857142857143, 65.28571428571429], [65.28571428571428, 65.28571428571429], [77.14285714285714, 65.28571428571428], [89.0, 65.28571428571428], [6.0, 53.42857142857142], [17.857142857142854, 53.42857142857143], [29.71428571428571, 53.42857142857142], [41.57142857142857, 53.42857142857142], [53.42857142857142, 53.42857142857142], [65.28571428571428, 53.42857142857143], [77.14285714285714, 53.42857142857142], [89.0, 53.42857142857142], [6.0, 41.57142857142858], [17.857142857142858, 41.57142857142858], [29.71428571428571, 41.57142857142857], [41.57142857142857, 41.57142857142858], [53.42857142857142, 41.57142857142858], [65.28571428571428, 41.57142857142857], [77.14285714285714, 41.57142857142858], [89.0, 41.57142857142858], [6.0, 29.714285714285722], [17.857142857142858, 29.714285714285726], [29.71428571428571, 29.714285714285722], [41.57142857142857, 29.71428571428572], [53.42857142857142, 29.714285714285722], [65.28571428571428, 29.714285714285722], [77.14285714285714, 29.714285714285722], [89.0, 29.714285714285722], [6.0, 17.85714285714286], [17.857142857142854, 17.857142857142865], [29.71428571428571, 17.85714285714286], [41.57142857142857, 17.857142857142858], [53.42857142857142, 17.85714285714286], [65.28571428571428, 17.85714285714286], [77.14285714285714, 17.85714285714286], [89.0, 17.85714285714286], [6.0, 6.0], [17.857142857142858, 6.0], [29.71428571428571, 6.0], [41.57142857142857, 6.0], [53.42857142857142, 6.0], [65.28571428571428, 6.0], [77.14285714285714, 6.0], [89.0, 6.0]], "data02": [[1.064814814814815, 0.3825925925925926], [2.3045370370370373, 0.3825925925925926], [2.3230555555555554, 0.3825925925925926], [2.3230555555555554, 0.4011111111111112], [2.3230555555555554, 0.5988888888888886], [2.3230555555555554, 0.6174074074074072], [2.3045370370370373, 0.6174074074074072], [1.064814814814815, 0.6174074074074072], [1.0462962962962965, 0.6174074074074072], [1.0462962962962965, 0.5988888888888886], [1.0462962962962965, 0.4011111111111112], [1.0462962962962965, 0.3825925925925926], [1.064814814814815, 0.3825925925925926]]}, "id": "el3415a70ba1a5-c1e0-40f5-946c-110619f25776", "plugins": [{"type": "reset"}, {"type": "zoom", "button": true, "enabled": false}, {"type": "boxzoom", "button": true, "enabled": false}, {"type": "hoverinfo", "id": "el34156593f4c6-54e5-4c85-a837-80022f463a88", "coords": [[6.0, 89.0], [17.857142857142858, 89.0], [29.71428571428571, 89.0], [41.57142857142857, 89.0], [53.42857142857142, 89.0], [65.28571428571428, 89.0], [77.14285714285714, 89.0], [89.0, 89.0], [6.0, 77.14285714285715], [17.857142857142858, 77.14285714285715], [29.71428571428571, 77.14285714285715], [41.57142857142857, 77.14285714285715], [53.42857142857143, 77.14285714285715], [65.28571428571428, 77.14285714285715], [77.14285714285714, 77.14285714285715], [89.0, 77.14285714285715], [6.0, 65.28571428571428], [17.857142857142854, 65.28571428571429], [29.71428571428571, 65.28571428571429], [41.57142857142857, 65.28571428571429], [53.42857142857143, 65.28571428571429], [65.28571428571428, 65.28571428571429], [77.14285714285714, 65.28571428571428], [89.0, 65.28571428571428], [6.0, 53.42857142857142], [17.857142857142854, 53.42857142857143], [29.71428571428571, 53.42857142857142], [41.57142857142857, 53.42857142857142], [53.42857142857142, 53.42857142857142], [65.28571428571428, 53.42857142857143], [77.14285714285714, 53.42857142857142], [89.0, 53.42857142857142], [6.0, 41.57142857142858], [17.857142857142858, 41.57142857142858], [29.71428571428571, 41.57142857142857], [41.57142857142857, 41.57142857142858], [53.42857142857142, 41.57142857142858], [65.28571428571428, 41.57142857142857], [77.14285714285714, 41.57142857142858], [89.0, 41.57142857142858], [6.0, 29.714285714285722], [17.857142857142858, 29.714285714285726], [29.71428571428571, 29.714285714285722], [41.57142857142857, 29.71428571428572], [53.42857142857142, 29.714285714285722], [65.28571428571428, 29.714285714285722], [77.14285714285714, 29.714285714285722], [89.0, 29.714285714285722], [6.0, 17.85714285714286], [17.857142857142854, 17.857142857142865], [29.71428571428571, 17.85714285714286], [41.57142857142857, 17.857142857142858], [53.42857142857142, 17.85714285714286], [65.28571428571428, 17.85714285714286], [77.14285714285714, 17.85714285714286], [89.0, 17.85714285714286], [6.0, 6.0], [17.857142857142858, 6.0], [29.71428571428571, 6.0], [41.57142857142857, 6.0], [53.42857142857142, 6.0], [65.28571428571428, 6.0], [77.14285714285714, 6.0], [89.0, 6.0]], "sign_array": ["+", "x", "+", "x", "+", "x", "+", "x", "x", "+", "x", "+", "x", "+", "x", "+", "+", "x", "+", "x", "+", "x", "+", "x", "x", "+", "x", "+", "x", "+", "x", "+", "+", "x", "+", "x", "+", "x", "+", "x", "x", "+", "x", "+", "x", "+", "x", "+", "+", "x", "+", "x", "+", "x", "+", "x", "x", "+", "x", "+", "x", "+", "x", "+"]}]});
+  }(mpld3);
+
+
+</script>
