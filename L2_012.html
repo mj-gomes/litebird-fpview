@@ -79,10 +79,10 @@ Each of the detector frequencies is considered a different detector object in th
         el.elements().on("mouseover", function(d, i){
             var px = coords[i][0], py = coords[i][1];
             var pol = sign_array[i];
-            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '000' : '045');
-            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '090' : '135');
-            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '000' : '045');
-            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '090' : '135');
+            var name1 = '012_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '000' : '045');
+            var name2 = '012_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '090' : '135');
+            var name3 = '012_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '000' : '045');
+            var name4 = '012_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '090' : '135');
             var ev = d3.event;
             if(ev && ev.pageX !== undefined){
                 info.style.left = (ev.pageX + 10) + 'px';
@@ -126,10 +126,10 @@ Each of the detector frequencies is considered a different detector object in th
         el.elements().on("mouseover", function(d, i){
             var px = coords[i][0], py = coords[i][1];
             var pol = sign_array[i];
-            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '000' : '045');
-            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '090' : '135');
-            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '000' : '045');
-            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '090' : '135');
+            var name1 = '012_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '000' : '045');
+            var name2 = '012_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '090' : '135');
+            var name3 = '012_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '000' : '045');
+            var name4 = '012_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '090' : '135');
             var ev = d3.event;
             if(ev && ev.pageX !== undefined){
                 info.style.left = (ev.pageX + 10) + 'px';
@@ -185,10 +185,10 @@ Each of the detector frequencies is considered a different detector object in th
         el.elements().on("dblclick", function(d, i){
             var px = coords[i][0], py = coords[i][1];
             var pol = sign_array[i];
-            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '000' : '045');
-            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '090' : '135');
-            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '000' : '045');
-            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '090' : '135');
+            var name1 = '012_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '000' : '045');
+            var name2 = '012_' + String(i).padStart(3,'0') + '_XX_50_' + (pol === '+' ? '090' : '135');
+            var name3 = '012_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '000' : '045');
+            var name4 = '012_' + String(i).padStart(3,'0') + '_XX_77_' + (pol === '+' ? '090' : '135');
 
             var htmlText =
                 '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
