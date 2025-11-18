@@ -1,0 +1,220 @@
+<h1>M1 (013) Wafer</h1>
+<p> --> Hover over the detector positions to get the names of the detector objects included in each of them.<br> --> Double click on a detector position to copy the detector names.</p>
+
+<h2>Please note:</h2>
+Each of the detector frequencies is considered a different detector object in the IMo, so does each polarisation angle. This means that each of the detector positions in the figure below actually correspond to 4 detector objects (2 colors and 2 orientations). 
+
+<script type="text/javascript" src="https://d3js.org/d3.v5.js"></script>
+<script type="text/javascript" src="https://mpld3.github.io/js/mpld3.v0.5.12.js"></script>
+
+
+<style>
+
+</style>
+
+<div id="fig_el33649d7b8677-d62c-4ffd-92a9-d739e837c970549828217"></div>
+<script type="text/javascript">
+
+  !function(mpld3){
+       
+    mpld3.register_plugin("hoverinfo", ClickInfoPlugin);
+    ClickInfoPlugin.prototype = Object.create(mpld3.Plugin.prototype);
+    ClickInfoPlugin.prototype.constructor = ClickInfoPlugin;
+    ClickInfoPlugin.prototype.requiredProps = ["id","coords", "sign_array"];
+    function ClickInfoPlugin(fig, props){
+        mpld3.Plugin.call(this, fig, props);
+    };
+    ClickInfoPlugin.prototype.draw = function(){
+        var fig = this.fig;
+        var el = mpld3.get_element(this.props.id);
+        var coords = this.props.coords;
+        var sign_array = this.props.sign_array;
+        var ax = fig.axes[0];
+        var container = (fig.canvas && fig.canvas.parentNode) ? fig.canvas.parentNode : document.body;
+
+        // floating info div
+        var info = document.createElement('div');
+        info.style.position = 'absolute';
+        info.style.background = 'black';
+        info.style.color = 'white';
+        info.style.border = '1px solid #333';
+        info.style.padding = '6px';
+        info.style.display = 'none';
+        info.style.pointerEvents = 'none';
+        info.style.zIndex = 9999;
+        container.appendChild(info);
+
+        var sel = null;
+
+        // copy helper (Clipboard API with textarea fallback)
+        function copyToClipboard(text){
+            if(navigator.clipboard && navigator.clipboard.writeText){
+                navigator.clipboard.writeText(text).catch(function(err){
+                    // fallback on error
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.focus();
+                    ta.select();
+                    try { document.execCommand('copy'); } catch(e) {}
+                    document.body.removeChild(ta);
+                });
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                try { document.execCommand('copy'); } catch(e){}
+                document.body.removeChild(ta);
+            }
+        }
+
+
+        // on hover show; on mouseout hide
+        el.elements().on("mouseover", function(d, i){
+            var px = coords[i][0], py = coords[i][1];
+            var pol = sign_array[i];
+            var name1 = '013_' + String(i).padStart(3,'0') + '_XX_94_' + (pol === '+' ? '000' : '045');
+            var name2 = '013_' + String(i).padStart(3,'0') + '_XX_94_' + (pol === '+' ? '090' : '135');
+            var name3 = '013_' + String(i).padStart(3,'0') + '_XX_145_' + (pol === '+' ? '000' : '045');
+            var name4 = '013_' + String(i).padStart(3,'0') + '_XX_145_' + (pol === '+' ? '090' : '135');
+            var ev = d3.event;
+            if(ev && ev.pageX !== undefined){
+                info.style.left = (ev.pageX + 10) + 'px';
+                info.style.top  = (ev.pageY + 10) + 'px';
+            } else {
+                var rect = container.getBoundingClientRect();
+                info.style.left = (rect.left + 10) + 'px';
+                info.style.top  = (rect.top + 10) + 'px';
+            }
+            
+            info.innerHTML =
+                '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
+                '<div>94GHz, Pol 0: ' + name1 + '</div>' +
+                '<div>94GHz, Pol 90: ' + name2 +  '</div>' +
+                '<div>145GHz, Pol 0: ' + name3 +  '</div>' +
+                '<div>145GHz, Pol 90: ' + name4 +  '</div>';
+            info.style.display = 'block';
+
+            if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
+
+            var svg = container.querySelector('svg');
+            if(!svg){ return; }
+            var sx = ax.x.scale(px), sy = ax.y.scale(py);
+            sel = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            sel.setAttribute('cx', sx);
+            sel.setAttribute('cy', sy);
+            sel.setAttribute('r', 8);
+            sel.setAttribute('fill', 'black');
+            sel.setAttribute('stroke', 'white');
+            sel.setAttribute('stroke-width', 2);
+            sel.setAttribute('class', 'mpld3-selected-point');
+            svg.appendChild(sel);
+        });
+
+        el.elements().on("mouseout", function(d, i){
+            info.style.display = 'none';
+            if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
+        });
+        // store original fill/stroke so we can restore
+
+        el.elements().on("mouseover", function(d, i){
+            var px = coords[i][0], py = coords[i][1];
+            var pol = sign_array[i];
+            var name1 = '013_' + String(i).padStart(3,'0') + '_XX_94_' + (pol === '+' ? '000' : '045');
+            var name2 = '013_' + String(i).padStart(3,'0') + '_XX_94_' + (pol === '+' ? '090' : '135');
+            var name3 = '013_' + String(i).padStart(3,'0') + '_XX_145_' + (pol === '+' ? '000' : '045');
+            var name4 = '013_' + String(i).padStart(3,'0') + '_XX_145_' + (pol === '+' ? '090' : '135');
+            var ev = d3.event;
+            if(ev && ev.pageX !== undefined){
+                info.style.left = (ev.pageX + 10) + 'px';
+                info.style.top  = (ev.pageY + 10) + 'px';
+            } else {
+                var rect = container.getBoundingClientRect();
+                info.style.left = (rect.left + 10) + 'px';
+                info.style.top  = (rect.top + 10) + 'px';
+            }
+            info.innerHTML =
+                '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
+                '<div>94GHz, Pol 0 -> Name: ' + name1 + '</div>' +
+                '<div>94GHz, Pol 90  -> Name: ' + name2 +  '</div>' +
+                '<div>145GHz, Pol 0 -> Name: ' + name3 +  '</div>' +
+                '<div>145GHz, Pol 90 -> Name: ' + name4 +  '</div>';
+            info.style.display = 'block';
+
+            // highlight underlying point (mpld3 point elements are usually <path> in the collection)
+            // `this` is the selection element; use d3.select(this) to access the specific point element
+            var point = d3.select(this);
+            // save original styles on DOM element so we can restore later
+            if (!this.__orig_fill) this.__orig_fill = point.attr("fill") || point.style("fill") || "";
+            if (!this.__orig_stroke) this.__orig_stroke = point.attr("stroke") || point.style("stroke") || "";
+            // set highlight color (change as desired)
+            point.attr("fill", "orange").attr("stroke", "red").style("fill", "orange").style("stroke", "red");
+
+            if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
+            var svg = container.querySelector('svg');
+            if(!svg){ return; }
+            var sx = ax.x.scale(px), sy = ax.y.scale(py);
+            sel = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            sel.setAttribute('cx', sx);
+            sel.setAttribute('cy', sy);
+            sel.setAttribute('r', 8);
+            sel.setAttribute('fill', 'black');
+            sel.setAttribute('stroke', 'white');
+            sel.setAttribute('stroke-width', 2);
+            sel.setAttribute('class', 'mpld3-selected-point');
+            svg.appendChild(sel);
+        });
+
+        el.elements().on("mouseout", function(d, i){
+            info.style.display = 'none';
+            // restore original styles
+            var point = d3.select(this);
+            if (this.__orig_fill !== undefined) { point.attr("fill", this.__orig_fill).style("fill", this.__orig_fill); }
+            if (this.__orig_stroke !== undefined) { point.attr("stroke", this.__orig_stroke).style("stroke", this.__orig_stroke); }
+
+            if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
+        });
+
+        // double-click to copy the info HTML
+        el.elements().on("dblclick", function(d, i){
+            var px = coords[i][0], py = coords[i][1];
+            var pol = sign_array[i];
+            var name1 = '013_' + String(i).padStart(3,'0') + '_XX_94_' + (pol === '+' ? '000' : '045');
+            var name2 = '013_' + String(i).padStart(3,'0') + '_XX_94_' + (pol === '+' ? '090' : '135');
+            var name3 = '013_' + String(i).padStart(3,'0') + '_XX_145_' + (pol === '+' ? '000' : '045');
+            var name4 = '013_' + String(i).padStart(3,'0') + '_XX_145_' + (pol === '+' ? '090' : '135');
+
+            var htmlText =
+                '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
+                '<div>94GHz, Pol 0: ' + name1 + '</div>' +
+                '<div>94GHz, Pol 90: ' + name2 +  '</div>' +
+                '<div>145GHz, Pol 0: ' + name3 +  '</div>' +
+                '<div>145GHz, Pol 90: ' + name4 +  '</div>';
+
+
+            var plain = htmlText.replace(/<br\s*\/?>/gi, '\n')
+                            .replace(/<\/div>/gi, '\n')
+                            .replace(/<[^>]+>/g, '')
+                            .replace(/\n\s*\n/g, '\n')
+                            .trim();
+
+            copyToClipboard(plain);
+
+            // optional: brief visual feedback in the info div
+            info.innerHTML = '<div style="font-weight:bold;margin-bottom:4px;">Copied to clipboard!</div>';
+            setTimeout(function(){ info.style.display = 'none'; }, 1000);
+});
+
+    }
+    
+       mpld3.draw_figure("fig_el33649d7b8677-d62c-4ffd-92a9-d739e837c970549828217", {"width": 1000.0, "height": 1000.0, "axes": [{"bbox": [0.15499999999999997, 0.45, 0.45, 0.45], "xlim": [0.0, 95.0], "ylim": [0.0, 95.0], "xdomain": [0.0, 95.0], "ydomain": [0.0, 95.0], "xscale": "linear", "yscale": "linear", "axes": [{"position": "bottom", "nticks": 6, "tickvalues": null, "tickformat_formatter": "", "tickformat": null, "scale": "linear", "fontsize": 10.0, "grid": {"gridOn": false}, "visible": true}, {"position": "left", "nticks": 6, "tickvalues": null, "tickformat_formatter": "", "tickformat": null, "scale": "linear", "fontsize": 10.0, "grid": {"gridOn": false}, "visible": true}], "axesbg": "#FFFFFF", "axesbgalpha": null, "zoomable": true, "id": "el33649794af1d-d2bf-4f7b-b134-17960f18ae01", "lines": [], "paths": [{"data": "data02", "xindex": 0, "yindex": 1, "coordinates": "axes", "pathcodes": ["M", "L", "S", "L", "S", "L", "S", "L", "S", "Z"], "id": "el336400ff6543-286a-4b4e-96f2-df6017f68fd3", "dasharray": "none", "alpha": 0.8, "facecolor": "none", "edgecolor": "none", "edgewidth": 1.0, "zorder": 1000000.0}], "markers": [], "texts": [{"text": "+", "position": [8.0, 87.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33640e269d13-43b5-48ee-99a1-4e388cf71404"}, {"text": "x", "position": [21.166666666666668, 87.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364008dcd01-690d-45e9-a3a3-caa9d52850a7"}, {"text": "+", "position": [34.333333333333336, 87.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364f836f95b-2c4a-4795-842c-275357ea23e4"}, {"text": "x", "position": [47.5, 87.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33649aed5099-e49f-49fe-aa70-bdaee3f1da75"}, {"text": "+", "position": [60.666666666666664, 87.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el336443991149-a678-4b3e-ae73-367398da200f"}, {"text": "x", "position": [73.83333333333333, 87.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33645607f578-897b-43d5-816e-72657d3c09e6"}, {"text": "+", "position": [87.0, 87.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33646ab37584-1e37-4146-920c-155a4d612eee"}, {"text": "x", "position": [8.0, 73.83333333333333], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33645aefec06-81ee-4d33-9107-ec47104c162f"}, {"text": "+", "position": [21.166666666666668, 73.83333333333334], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364f14b7f5a-8ad2-4fa3-b175-2882211eb028"}, {"text": "x", "position": [34.333333333333336, 73.83333333333333], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364ea8a0937-fe44-4a6a-9f16-09dd72f5e52d"}, {"text": "+", "position": [47.5, 73.83333333333334], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el336471c4f81d-47da-49bd-89ca-ea6f54b3e72b"}, {"text": "x", "position": [60.66666666666666, 73.83333333333333], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364e10471d7-549d-4176-add8-eb441d90b2f2"}, {"text": "+", "position": [73.83333333333333, 73.83333333333334], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33640939a53b-10be-445e-aeff-ed9ac76296b8"}, {"text": "x", "position": [87.0, 73.83333333333333], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364240590fe-8337-40b4-92d3-633d6c157979"}, {"text": "+", "position": [8.0, 60.66666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33645aba3c19-54a4-47bf-a3bd-0b11a2055bcd"}, {"text": "x", "position": [21.166666666666668, 60.66666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el336416d49d06-cab0-417d-8a40-42787a210dd3"}, {"text": "+", "position": [34.333333333333336, 60.66666666666668], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33643cd89c7c-2bb5-4821-8b83-0f9d85b1fbfd"}, {"text": "x", "position": [47.50000000000001, 60.66666666666668], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33641719603e-558a-41a0-8aa7-495fe6624b8d"}, {"text": "+", "position": [60.66666666666667, 60.66666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33648b6935b0-eea7-4685-bd40-08cd3383352d"}, {"text": "x", "position": [73.83333333333333, 60.66666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364e3f76c57-91a8-4c23-bb6e-a25328448ec6"}, {"text": "+", "position": [87.0, 60.66666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364e0b5a5fc-8437-41c9-b15f-ffd526044b2e"}, {"text": "x", "position": [8.0, 47.5], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364ffc3c044-260f-4565-9530-315aaebcfef2"}, {"text": "+", "position": [21.166666666666668, 47.5], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364a798b472-f51f-43b1-8399-9b8b50765571"}, {"text": "x", "position": [34.333333333333336, 47.5], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33643464cbde-6bae-405f-acfe-3011357d4580"}, {"text": "+", "position": [47.5, 47.5], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364320332e1-57a9-4122-ab8f-5e31705cdf62"}, {"text": "x", "position": [60.666666666666664, 47.5], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33649eda2b1f-1158-4505-92c4-b619e28dbfc4"}, {"text": "+", "position": [73.83333333333333, 47.5], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364c0e7e928-c745-42f9-a8a0-54e015bde4df"}, {"text": "x", "position": [87.0, 47.5], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364180e683b-1c6c-40c0-9eef-60b09b289581"}, {"text": "x", "position": [8.0, 34.333333333333336], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el336474f853e0-6629-40a4-846a-90340afa2d39"}, {"text": "+", "position": [21.166666666666668, 34.333333333333336], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33641a7bbd94-e25a-43f3-b541-8fb8faf36dc0"}, {"text": "x", "position": [34.333333333333336, 34.33333333333334], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364f6b52bd4-46bb-48cb-abb0-0e443b8adbbe"}, {"text": "+", "position": [47.5, 34.333333333333336], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364b8efbd75-128e-4a0a-b028-498dd95d9d38"}, {"text": "x", "position": [60.66666666666667, 34.333333333333336], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364e0ef2218-5c51-4055-a6bc-5061b0a3c397"}, {"text": "+", "position": [73.83333333333333, 34.333333333333336], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364e0ce1b29-b8aa-468f-a196-8f00876fc1d7"}, {"text": "x", "position": [87.0, 34.333333333333336], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el336434113704-1e95-40e4-b93b-948ede1e1a7d"}, {"text": "+", "position": [8.0, 21.16666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364b1f857f4-9e2f-4fa8-a0b2-c0c2adae1124"}, {"text": "x", "position": [21.166666666666668, 21.16666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33645c5ed045-2abd-4f5a-9cc6-64bd90d2650a"}, {"text": "+", "position": [34.333333333333336, 21.166666666666675], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33649b92f771-7ebb-4df9-bfea-81b1516059e1"}, {"text": "x", "position": [47.5, 21.16666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364b0ccc615-df1d-45d5-8d1f-420f6830806a"}, {"text": "+", "position": [60.66666666666667, 21.16666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364391adfa1-e0b3-4f16-8e26-fb88fe9bfa51"}, {"text": "x", "position": [73.83333333333333, 21.16666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el336445ac84f1-450f-42d6-a536-457aa6b9f926"}, {"text": "+", "position": [87.0, 21.16666666666667], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364534e5a65-208d-4ee3-9a03-d0455027bb3c"}, {"text": "x", "position": [8.0, 8.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364b959bae9-c3b7-4363-99ad-27ca1e84b2e1"}, {"text": "+", "position": [21.166666666666668, 8.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33642dc85029-f8eb-4887-879b-b2822556ce23"}, {"text": "x", "position": [34.333333333333336, 8.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el33646fdebef9-8250-4b67-a77f-20368fb39934"}, {"text": "+", "position": [47.5, 8.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el336446eea1ae-806a-4449-9216-5d7e92f18ec1"}, {"text": "x", "position": [60.666666666666664, 8.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364e25f36ab-6fb1-47df-81fc-63d60d008442"}, {"text": "+", "position": [73.83333333333333, 8.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364ff886e28-3be0-4442-95cd-54263dc5b21c"}, {"text": "x", "position": [87.0, 8.0], "coordinates": "data", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 20.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364dadecbcc-dc83-4b87-b006-4fcaa7989542"}, {"text": "mm", "position": [0.5, -0.13012345679012338], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "hanging", "rotation": -0.0, "fontsize": 10.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364d1969f45-111d-4369-b0b3-d887e6382329"}, {"text": "mm", "position": [-0.1465123456790124, 0.5], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "auto", "rotation": -90.0, "fontsize": 10.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el336448473664-8b22-47a1-a570-621cefe46926"}, {"text": "M1 006", "position": [0.5, 1.037037037037037], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "auto", "rotation": -0.0, "fontsize": 12.0, "color": "#000000", "alpha": 1, "zorder": 3, "id": "el3364d527ef94-f7a4-4ad1-8357-b81c882903e5"}, {"text": "+", "position": [1.0935185185185186, 0.5568055555555556], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 30.0, "color": "#000000", "alpha": 1, "zorder": 1000003.0, "id": "el33648934d31b-e8db-44f6-8190-a40bed54fb16"}, {"text": "Polarisation aligned w/ FP", "position": [1.1407407407407408, 0.5431481481481482], "coordinates": "axes", "h_anchor": "start", "v_baseline": "auto", "rotation": -0.0, "fontsize": 15.0, "color": "#000000", "alpha": 1, "zorder": 1000003.0, "id": "el3364665c63ae-04ca-407f-bf5b-7ab94fdbffb3"}, {"text": "x", "position": [1.0935185185185186, 0.4171759259259258], "coordinates": "axes", "h_anchor": "middle", "v_baseline": "central", "rotation": -0.0, "fontsize": 30.0, "color": "#000000", "alpha": 1, "zorder": 1000003.0, "id": "el3364147d83d4-f415-4516-ab94-50420ecd3c2d"}, {"text": "45\u00ba offset polarisation", "position": [1.1407407407407408, 0.4035185185185184], "coordinates": "axes", "h_anchor": "start", "v_baseline": "auto", "rotation": -0.0, "fontsize": 15.0, "color": "#000000", "alpha": 1, "zorder": 1000003.0, "id": "el3364d2dd1c3f-18b0-4ade-95d3-0add93c76efd"}], "collections": [{"offsets": "data01", "xindex": 0, "yindex": 1, "paths": [[[[0.0, -0.5], [0.13260155, -0.5], [0.25978993539242673, -0.44731684579412084], [0.3535533905932738, -0.3535533905932738], [0.44731684579412084, -0.25978993539242673], [0.5, -0.13260155], [0.5, 0.0], [0.5, 0.13260155], [0.44731684579412084, 0.25978993539242673], [0.3535533905932738, 0.3535533905932738], [0.25978993539242673, 0.44731684579412084], [0.13260155, 0.5], [0.0, 0.5], [-0.13260155, 0.5], [-0.25978993539242673, 0.44731684579412084], [-0.3535533905932738, 0.3535533905932738], [-0.44731684579412084, 0.25978993539242673], [-0.5, 0.13260155], [-0.5, 0.0], [-0.5, -0.13260155], [-0.44731684579412084, -0.25978993539242673], [-0.3535533905932738, -0.3535533905932738], [-0.25978993539242673, -0.44731684579412084], [-0.13260155, -0.5], [0.0, -0.5]], ["M", "C", "C", "C", "C", "C", "C", "C", "C", "Z"]]], "pathtransforms": [[62.11299937499416, 0.0, 0.0, 62.11299937499416, 0.0, 0.0]], "alphas": [0.7], "edgecolors": ["rgba(31, 119, 180, 0.7)"], "facecolors": ["rgba(31, 119, 180, 0.7)"], "edgewidths": [1.0], "offsetcoordinates": "data", "pathcoordinates": "display", "zorder": 1, "id": "el3364d08f0fc2-6117-4932-ac5e-f0d4903e5d03"}], "images": [], "sharex": [], "sharey": []}], "data": {"data01": [[8.0, 87.0], [21.166666666666668, 87.0], [34.333333333333336, 87.0], [47.5, 87.0], [60.666666666666664, 87.0], [73.83333333333333, 87.0], [87.0, 87.0], [8.0, 73.83333333333333], [21.166666666666668, 73.83333333333334], [34.333333333333336, 73.83333333333333], [47.5, 73.83333333333334], [60.66666666666666, 73.83333333333333], [73.83333333333333, 73.83333333333334], [87.0, 73.83333333333333], [8.0, 60.66666666666667], [21.166666666666668, 60.66666666666667], [34.333333333333336, 60.66666666666668], [47.50000000000001, 60.66666666666668], [60.66666666666667, 60.66666666666667], [73.83333333333333, 60.66666666666667], [87.0, 60.66666666666667], [8.0, 47.5], [21.166666666666668, 47.5], [34.333333333333336, 47.5], [47.5, 47.5], [60.666666666666664, 47.5], [73.83333333333333, 47.5], [87.0, 47.5], [8.0, 34.333333333333336], [21.166666666666668, 34.333333333333336], [34.333333333333336, 34.33333333333334], [47.5, 34.333333333333336], [60.66666666666667, 34.333333333333336], [73.83333333333333, 34.333333333333336], [87.0, 34.333333333333336], [8.0, 21.16666666666667], [21.166666666666668, 21.16666666666667], [34.333333333333336, 21.166666666666675], [47.5, 21.16666666666667], [60.66666666666667, 21.16666666666667], [73.83333333333333, 21.16666666666667], [87.0, 21.16666666666667], [8.0, 8.0], [21.166666666666668, 8.0], [34.333333333333336, 8.0], [47.5, 8.0], [60.666666666666664, 8.0], [73.83333333333333, 8.0], [87.0, 8.0]], "data02": [[1.064814814814815, 0.3825925925925926], [2.3045370370370373, 0.3825925925925926], [2.3230555555555554, 0.3825925925925926], [2.3230555555555554, 0.4011111111111112], [2.3230555555555554, 0.5988888888888886], [2.3230555555555554, 0.6174074074074072], [2.3045370370370373, 0.6174074074074072], [1.064814814814815, 0.6174074074074072], [1.0462962962962965, 0.6174074074074072], [1.0462962962962965, 0.5988888888888886], [1.0462962962962965, 0.4011111111111112], [1.0462962962962965, 0.3825925925925926], [1.064814814814815, 0.3825925925925926]]}, "id": "el33649d7b8677-d62c-4ffd-92a9-d739e837c970", "plugins": [{"type": "reset"}, {"type": "zoom", "button": true, "enabled": false}, {"type": "boxzoom", "button": true, "enabled": false}, {"type": "hoverinfo", "id": "el3364d08f0fc2-6117-4932-ac5e-f0d4903e5d03", "coords": [[8.0, 87.0], [21.166666666666668, 87.0], [34.333333333333336, 87.0], [47.5, 87.0], [60.666666666666664, 87.0], [73.83333333333333, 87.0], [87.0, 87.0], [8.0, 73.83333333333333], [21.166666666666668, 73.83333333333334], [34.333333333333336, 73.83333333333333], [47.5, 73.83333333333334], [60.66666666666666, 73.83333333333333], [73.83333333333333, 73.83333333333334], [87.0, 73.83333333333333], [8.0, 60.66666666666667], [21.166666666666668, 60.66666666666667], [34.333333333333336, 60.66666666666668], [47.50000000000001, 60.66666666666668], [60.66666666666667, 60.66666666666667], [73.83333333333333, 60.66666666666667], [87.0, 60.66666666666667], [8.0, 47.5], [21.166666666666668, 47.5], [34.333333333333336, 47.5], [47.5, 47.5], [60.666666666666664, 47.5], [73.83333333333333, 47.5], [87.0, 47.5], [8.0, 34.333333333333336], [21.166666666666668, 34.333333333333336], [34.333333333333336, 34.33333333333334], [47.5, 34.333333333333336], [60.66666666666667, 34.333333333333336], [73.83333333333333, 34.333333333333336], [87.0, 34.333333333333336], [8.0, 21.16666666666667], [21.166666666666668, 21.16666666666667], [34.333333333333336, 21.166666666666675], [47.5, 21.16666666666667], [60.66666666666667, 21.16666666666667], [73.83333333333333, 21.16666666666667], [87.0, 21.16666666666667], [8.0, 8.0], [21.166666666666668, 8.0], [34.333333333333336, 8.0], [47.5, 8.0], [60.666666666666664, 8.0], [73.83333333333333, 8.0], [87.0, 8.0]], "sign_array": ["+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x", "+", "x"]}]});
+  }(mpld3);
+
+
+</script>
