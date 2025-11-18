@@ -80,10 +80,10 @@ Each of the detector frequencies is considered a different detector object in th
         el.elements().on("mouseover", function(d, i){
             var px = coords[i][0], py = coords[i][1];
             var pol = sign_array[i];
-            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_280_' + (pol === '+' ? '000' : '045');
-            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_280_' + (pol === '+' ? '090' : '135');
-            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_402_' + (pol === '+' ? '000' : '045');
-            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_402_' + (pol === '+' ? '090' : '135');
+            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_40_' + (pol === '+' ? '000' : '045');
+            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_40_' + (pol === '+' ? '090' : '135');
+            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_61_' + (pol === '+' ? '000' : '045');
+            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_61_' + (pol === '+' ? '090' : '135');
             var ev = d3.event;
             if(ev && ev.pageX !== undefined){
                 info.style.left = (ev.pageX + 10) + 'px';
@@ -96,10 +96,10 @@ Each of the detector frequencies is considered a different detector object in th
             
             info.innerHTML =
                 '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
-                '<div>280GHz, Pol 0: ' + name1 + '</div>' +
-                '<div>280GHz, Pol 90: ' + name2 +  '</div>' +
-                '<div>402GHz, Pol 0: ' + name3 +  '</div>' +
-                '<div>402GHz, Pol 90: ' + name4 +  '</div>';
+                '<div>40GHz, Pol 0: ' + name1 + '</div>' +
+                '<div>40GHz, Pol 90: ' + name2 +  '</div>' +
+                '<div>61GHz, Pol 0: ' + name3 +  '</div>' +
+                '<div>61GHz, Pol 90: ' + name4 +  '</div>';
             info.style.display = 'block';
 
             if(sel && sel.parentNode){ sel.parentNode.removeChild(sel); sel = null; }
@@ -127,10 +127,10 @@ Each of the detector frequencies is considered a different detector object in th
         el.elements().on("mouseover", function(d, i){
             var px = coords[i][0], py = coords[i][1];
             var pol = sign_array[i];
-            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_280_' + (pol === '+' ? '000' : '045');
-            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_280_' + (pol === '+' ? '090' : '135');
-            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_402_' + (pol === '+' ? '000' : '045');
-            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_402_' + (pol === '+' ? '090' : '135');
+            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_40_' + (pol === '+' ? '000' : '045');
+            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_40_' + (pol === '+' ? '090' : '135');
+            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_61_' + (pol === '+' ? '000' : '045');
+            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_61_' + (pol === '+' ? '090' : '135');
             var ev = d3.event;
             if(ev && ev.pageX !== undefined){
                 info.style.left = (ev.pageX + 10) + 'px';
@@ -142,10 +142,10 @@ Each of the detector frequencies is considered a different detector object in th
             }
             info.innerHTML =
                 '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
-                '<div>280GHz, Pol 0 -> Name: ' + name1 + '</div>' +
-                '<div>280GHz, Pol 90  -> Name: ' + name2 +  '</div>' +
-                '<div>402GHz, Pol 0 -> Name: ' + name3 +  '</div>' +
-                '<div>402GHz, Pol 90 -> Name: ' + name4 +  '</div>';
+                '<div>40GHz, Pol 0 -> Name: ' + name1 + '</div>' +
+                '<div>40GHz, Pol 90  -> Name: ' + name2 +  '</div>' +
+                '<div>61GHz, Pol 0 -> Name: ' + name3 +  '</div>' +
+                '<div>61GHz, Pol 90 -> Name: ' + name4 +  '</div>';
             info.style.display = 'block';
 
             // highlight underlying point (mpld3 point elements are usually <path> in the collection)
@@ -186,17 +186,17 @@ Each of the detector frequencies is considered a different detector object in th
         el.elements().on("dblclick", function(d, i){
             var px = coords[i][0], py = coords[i][1];
             var pol = sign_array[i];
-            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_280_' + (pol === '+' ? '000' : '045');
-            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_280_' + (pol === '+' ? '090' : '135');
-            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_402_' + (pol === '+' ? '000' : '045');
-            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_402_' + (pol === '+' ? '090' : '135');
+            var name1 = '009_' + String(i).padStart(3,'0') + '_XX_40_' + (pol === '+' ? '000' : '045');
+            var name2 = '009_' + String(i).padStart(3,'0') + '_XX_40_' + (pol === '+' ? '090' : '135');
+            var name3 = '009_' + String(i).padStart(3,'0') + '_XX_61_' + (pol === '+' ? '000' : '045');
+            var name4 = '009_' + String(i).padStart(3,'0') + '_XX_61_' + (pol === '+' ? '090' : '135');
 
             var htmlText =
                 '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
-                '<div>280GHz, Pol 0: ' + name1 + '</div>' +
-                '<div>280GHz, Pol 90: ' + name2 +  '</div>' +
-                '<div>402GHz, Pol 0: ' + name3 +  '</div>' +
-                '<div>402GHz, Pol 90: ' + name4 +  '</div>';
+                '<div>40GHz, Pol 0: ' + name1 + '</div>' +
+                '<div>40GHz, Pol 90: ' + name2 +  '</div>' +
+                '<div>61GHz, Pol 0: ' + name3 +  '</div>' +
+                '<div>61GHz, Pol 90: ' + name4 +  '</div>';
 
 
             var plain = htmlText.replace(/<br\s*\/?>/gi, '\n')
