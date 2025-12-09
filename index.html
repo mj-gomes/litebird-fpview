@@ -147,16 +147,28 @@
 
                         info.innerHTML =
                             '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
-                            "<div>40GHz, Pol 0: " +
+                            "<div>"+ freqs[i][0] +
+                            "GHz, Pol"+
+                            (pol === "+" ? "0" : "45")+
+                            " -> Name: " +
                             name1 +
                             "</div>" +
-                            "<div>40GHz, Pol 90: " +
+                            "<div>"+ freqs[i][0] +
+                            "GHz, Pol"+
+                            (pol === "+" ? "90" : "135")+
+                            " -> Name: " +
                             name2 +
                             "</div>" +
-                            "<div>61GHz, Pol 0: " +
+                            "<div>"+ freqs[i][1] +
+                            "GHz, Pol"+
+                            (pol === "+" ? "0" : "45")+
+                            " -> Name: " +
                             name3 +
                             "</div>" +
-                            "<div>61GHz, Pol 90: " +
+                            "<div>"+ freqs[i][1] +
+                            "GHz, Pol"+
+                            (pol === "+" ? "90" : "135")+
+                            " -> Name: " +
                             name4 +
                             "</div>";
                         info.style.display = "block";
@@ -230,16 +242,28 @@
                         }
                         info.innerHTML =
                             '<div style="font-weight:bold;margin-bottom:4px;">Detector objects:</div>' +
-                            "<div>40GHz, Pol 0 -> Name: " +
+                            "<div>"+ freqs[i][0] +
+                            "GHz, Pol"+
+                            (pol === "+" ? "0" : "45")+
+                            " -> Name: " +
                             name1 +
                             "</div>" +
-                            "<div>40GHz, Pol 90  -> Name: " +
+                            "<div>"+ freqs[i][0] +
+                            "GHz, Pol"+
+                            (pol === "+" ? "90" : "135")+
+                            " -> Name: " +
                             name2 +
                             "</div>" +
-                            "<div>61GHz, Pol 0 -> Name: " +
+                            "<div>"+ freqs[i][1] +
+                            "GHz, Pol"+
+                            (pol === "+" ? "0" : "45")+
+                            " -> Name: " +
                             name3 +
                             "</div>" +
-                            "<div>61GHz, Pol 90 -> Name: " +
+                            "<div>"+ freqs[i][1] +
+                            "GHz, Pol"+
+                            (pol === "+" ? "90" : "135")+
+                            " -> Name: " +
                             name4 +
                             "</div>";
                         info.style.display = "block";
