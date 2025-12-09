@@ -343,24 +343,24 @@
                             py = coords[i][1];
                         var pol = sign_array[i];
                         var name1 =
-                            "000_" +
-                            String(i).padStart(3, "0") +
-                            "_XX_280_" +
+                            det_names[i] +
+                            freqs[i][0] +
+                            "_" +
                             (pol === "+" ? "000" : "045");
                         var name2 =
-                            "000_" +
-                            String(i).padStart(3, "0") +
-                            "_XX_280_" +
+                            det_names[i] +
+                            freqs[i][0] +
+                            "_" +
                             (pol === "+" ? "090" : "135");
                         var name3 =
-                            "000_" +
-                            String(i).padStart(3, "0") +
-                            "_XX_402_" +
+                            det_names[i] +
+                            freqs[i][1] +
+                            "_" +
                             (pol === "+" ? "000" : "045");
                         var name4 =
-                            "000_" +
-                            String(i).padStart(3, "0") +
-                            "_XX_402_" +
+                            det_names[i] +
+                            freqs[i][1] +
+                            "_" +
                             (pol === "+" ? "090" : "135");
 
                         var htmlText =
