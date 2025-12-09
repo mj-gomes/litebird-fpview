@@ -8,7 +8,7 @@ Interactive visualization of LiteBIRD focal plane
 - add option to copy the names of all detectors in a given frequency/wafer.
 - add selection box to change between focal planes of different IMo versions.
   
-*updated on: 9 december 2025*
+*last updated on: 9 december 2025*
 
 (accepting suggestions)
 
